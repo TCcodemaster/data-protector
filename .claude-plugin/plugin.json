@@ -1,0 +1,10 @@
+{
+  "name": "data-protector",
+  "version": "1.0.0",
+  "description": "Masks sensitive data columns when Claude reads CSV, Excel, SQL, R, or pandas output. Configure once, enforced across all sessions.",
+  "author": {
+    "name": "terry"
+  },
+  "license": "MIT",
+  "keywords": ["data", "privacy", "security", "column-masking", "csv", "excel", "sql"]
+}

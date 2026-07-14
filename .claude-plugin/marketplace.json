@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "data-protector",
+  "description": "Masks sensitive data columns when Claude reads CSV, Excel, SQL, R, or pandas output.",
+  "owner": {
+    "name": "TCcodemaster",
+    "email": "terrychien926@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "data-protector",
+      "description": "Masks sensitive data columns when Claude reads CSV, Excel, SQL, R, or pandas output.",
+      "author": {
+        "name": "TCcodemaster"
+      },
+      "category": "security",
+      "source": "."
+    }
+  ]
+}

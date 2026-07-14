@@ -1,0 +1,27 @@
+{
+  "description": "Data protector - masks sensitive columns in data output",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/pretool_handler.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/posttool_handler.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
