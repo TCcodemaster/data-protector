@@ -15,10 +15,12 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from config_manager import load_config, is_file_configured, CONFIG_PATH
+from update_checker import check_for_update
 
 PLUGIN_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FILTER_SCRIPT = os.path.join(PLUGIN_ROOT, "scripts", "filter.py")
 LAST_FILE_PATH = os.path.expanduser("~/.claude/data-protector-last-file.txt")
+PYTHON = sys.executable
 
 DATA_EXTENSIONS = {".csv", ".tsv", ".xlsx", ".xls", ".json", ".parquet"}
 DATA_EXT_PATTERN = re.compile(
@@ -136,6 +138,9 @@ def block_with_filter(reason, filtered_cmd, extra_info="", file_path=None):
     )
     if extra_info:
         msg += f"\n\n{extra_info}"
+    update_msg = check_for_update()
+    if update_msg:
+        msg += f"\n\n{update_msg}"
     print(json.dumps({"systemMessage": msg}))
     print(reason, file=sys.stderr)
     sys.exit(2)
@@ -186,14 +191,21 @@ def get_unconfigured_hint(file_path):
     )
 
 
+def _filter_cmd(file_path):
+    return f'"{PYTHON}" "{FILTER_SCRIPT}" "{file_path}"'
+
+
+def _filter_cmd_stdin(prefix, fmt):
+    return f'{prefix} | "{PYTHON}" "{FILTER_SCRIPT}" --stdin --format {fmt}'
+
+
 def handle_configured(tool_name, tool_input, config):
     """Block and redirect to filtered command."""
     if tool_name == "Read":
         file_path = tool_input.get("file_path", "")
-        filter_cmd = f'python3 "{FILTER_SCRIPT}" "{file_path}"'
         block_with_filter(
             f"Blocked direct Read on '{os.path.basename(file_path)}'.",
-            filter_cmd,
+            _filter_cmd(file_path),
             get_unconfigured_hint(file_path),
             file_path
         )
@@ -205,17 +217,15 @@ def handle_configured(tool_name, tool_input, config):
         if COPY_CMDS.search(command) and has_data_file_ref(command):
             block_with_filter(
                 f"Blocked copy/link/move of protected data file. Do NOT duplicate data files to bypass protection.",
-                f'python3 "{FILTER_SCRIPT}" "{file_path}"' if file_path else "# no bypass",
+                _filter_cmd(file_path) if file_path else "# no bypass",
                 file_path=file_path
             )
         elif SQL_PATTERNS.search(command):
-            filter_cmd = f'{command} | python3 "{FILTER_SCRIPT}" --stdin --format sql'
-            block_with_filter("Blocked unfiltered SQL query.", filter_cmd)
+            block_with_filter("Blocked unfiltered SQL query.", _filter_cmd_stdin(command, "sql"))
         elif file_path:
-            filter_cmd = f'python3 "{FILTER_SCRIPT}" "{file_path}"'
             block_with_filter(
                 f"Blocked unfiltered access to '{os.path.basename(file_path)}'.",
-                filter_cmd,
+                _filter_cmd(file_path),
                 get_unconfigured_hint(file_path),
                 file_path
             )

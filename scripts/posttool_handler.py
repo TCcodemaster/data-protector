@@ -94,7 +94,7 @@ def main():
             "CRITICAL: The output above contains UNFILTERED tabular data with protected columns. "
             "This data bypassed the filter. You MUST NOT display, quote, or reference ANY values "
             "from the protected columns. Discard this output entirely and use the filter command:\n"
-            f'python3 "<plugin>/scripts/filter.py" "<file_path>"'
+            f'"<python>" "<plugin>/scripts/filter.py" "<file_path>"'
         )
     elif leaked:
         cols_str = ", ".join(leaked)
