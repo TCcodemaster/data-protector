@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"${CLAUDE_PLUGIN_ROOT}/scripts/pretool_handler.py\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/pretool_handler.js\"",
             "timeout": 10
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"${CLAUDE_PLUGIN_ROOT}/scripts/posttool_handler.py\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/posttool_handler.js\"",
             "timeout": 10
           }
         ]
